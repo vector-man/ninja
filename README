@@ -1,0 +1,176 @@
+------------------------------------------------------------------------------
+ NINJA - PHP Edition                                             version 1.01
+ Written by Derrick Sobodash                                   Copyright 2004
+ Released on March 3, 2004                       http://derrick.sobodash.com/
+------------------------------------------------------------------------------
+
+ HISTORY
+
+  v1.01:
+   * Fixed binary patching to interprest a value of 0 as no known
+     CRC32/MD5/SHA1. It was in the specs but mistakenly passed over.
+  v1.0:
+   * Initial release
+
+------------------------------------------------------------------------------
+
+ INFORMATION
+
+  Given the already wide-spread use of IPS, one may quickly wonder why I, of
+  all people, took it upon myself to create a new patching format. There are
+  many reasons, but the most important ones can be summed up as follows:
+
+    + IPS format is limited to 24-bit addressing. This means you cannot
+      make an IPS of a file over 16MB. Even with PPF, which uses 32-bit
+      addressing, you are still limited to 4GB. As we're seeing more and
+      more 8GB+ DVDs, it's only a matter of time until we have a need for
+      ISO patches supporting higher addressing.
+
+    + IPS stores no information to verify the file it is being applied to
+      is the file it was intended for. Anyone who has ever done a
+      translation should appreciate the number of clueless users who
+      can't make the patch work with the interleaved, broke-ass ROM they
+      got from BIG AL's l33t H4uS of Romhs.
+
+    + I really wanted the experience of developing my own file format for
+      once, instead of always reverse-engineering someone else's. I
+      wanted to make something I, and possibly others, would actually have
+      a use for.
+
+  For the above reasons, I developed what I have named The NINJA Patch
+  Formats, a series of patch specifications designed to deal with the above
+  issues.
+
+------------------------------------------------------------------------------
+
+ FEATURES
+
+  There are four forms of NINJA patches, all of which share the extension
+  ".RUP"  They are identified by the first eight bytes of the file (if you
+  are curious about this, you should probably read the specifications).
+  These forms include textual and binary patches in both raw and compressed
+  forms. Compressed patches use the gzip compression routine. This is the
+  only compression used in NINJA formats.
+
+  Textual patches are larger, but they offer the user some extra options,
+  namely comments. Any line beginning with "#" is recognized by NINJA as a
+  comment and will be ignored. I'm sure you can think of your own uses for
+  such.
+
+  NINJA patches also store the CRC32, MD5sum and SHA1 of a source file. This
+  means it's virtually impossible to apply a NINJA patch to a file it was
+  not designed for. On top of this, it has special support for console
+  systems such as Super Nintendo, Sega Megadrive and Nintendo Game Boy for
+  working with the many file formats. It can detect whether a ROM needs its
+  headers removed, deinterleaving or other problems, so that a patch made
+  by NINJA will work on any intended ROM, regardless of its format.
+
+  For example, I make a patch of a Megadrive game I hacked. And end user
+  wants to apply it, but their ROM is in SMD (even though some jackass named
+  it .BIN). NINJA will detect their SMD ROM, deinterleave it, and apply the
+  patch properly, where other tools like IPS or PPF would fail.
+
+  NINJA supports nearly infinite patch sizes and patch lengths. How infinite
+  is nearly infinite? Well if you want to work out 2^2040, be my guest, but
+  if not, I'll just tell you it's around 600 zeros longer than the largest
+  number commonly named -- a googolplex. And I don't expect to see hard
+  disks, let alone files that size until my hair is grey. 2^2040 is the hard
+  limit for both addressing and patching.
+
+  This implementation also includes support for IPS patching, as well as the
+  NINJA formats, to help ease a few of the IPS die-hards over to the new
+  format.
+
+  The PHP implementation is capable of working on any platform which
+  supports PHP (currently Windows, Linux, FreeBSD/variant, AmigaOS,
+  Mac OS X, Novell NetWare, OS/2, RISC OS, SGI's IRIX, AS/400 and possibly
+  QNX).
+
+------------------------------------------------------------------------------
+
+ LIMITATIONS
+
+  While the format may have virtually none, NINJA implementations may have
+  some. For example, this PHP implementation (that includes the EXE version)
+  is limited to a max of 32-bit addressing because, as of the current PHP
+  version, no variable can hold a quantity higher than 0xffffffff. I hear
+  int64 support is coming soon, which would bring the limitations up to
+  well over 120GB.
+
+  However, that's just this implementation of the NINJA format. A NINJA
+  compatible patcher written in another language (for example, C with asm,
+  which could make it as high as 80-bit) could take it further. This is
+  really a format designed to grow with computers and languages, because it
+  can always expand upward while retaining full backwards compatibility.
+
+------------------------------------------------------------------------------
+
+ REQUIREMENTS
+
+  For the executable version, you will need a Windows operating system with
+  32-bit executable support (I think this means Windows 95 users are out of
+  luck).
+
+  For the PHP version, you will need a system with PHP 4.3.2 or later
+  installed. If on a Windows or DOS system, it's recommended you add PHP to
+  your $PATH$ Environment Variable.
+
+------------------------------------------------------------------------------
+
+ USAGE
+
+  Run NINJA without any parameters to display the quick help. Modes of
+  operation are listed below:
+
+  ninja -p <patch file> <file to patch>
+    NINJA will accept any of the NINJA 1.0 formats or the IPS format with
+    this command. Your file will be backed up to FILENAME.BAK. After
+    patching is complete, you'll be prompted whether to keep or delete the
+    file.
+
+  ninja [-t/-tz] <mode> <source file> <modified file> <patch>
+    NINJA will create a textual patch of the differences between the
+    source and modified files. For mode, specify any of the valid modes
+    for NINJA 1.0 (note: not all of them have special functions yet). If
+    -tz is used, a gzip compressed patch block will be built.
+
+  ninja [-b/-bz] <mode> <source file> <modified file> <patch>
+    NINJA will create a binary patch of the differences between the
+    source and modified files. Same rules apply for textual patches. If
+    -bz is used, a gzip compressed patch block will be built.
+
+
+------------------------------------------------------------------------------
+
+ MODES
+
+  The following modes are recognized by NINJA 1.0:
+
+    raw   --  RAW data, no special processing
+    nes   --  Nintendo Entertainment System/Famicom 8-bit
+    snes  --  Super Nintendo Entertainment System/Super Famicom 16-bit
+    n64   --  Nintendo 64
+    gb    --  Game Boy
+    gbc   --  Game Boy Color
+    gba   --  Game Boy Advance
+    ngp   --  NeoGeo Pocket
+    ngpc  --  NeoGeo Pocket Color
+    sms   --  Sega Master System
+    gg    --  Game Gear
+    mega  --  Genesis Megadrive
+    pce   --  NEC TurboGrafx16/PC-Engine
+    ws    --  Bandai WonderSwan
+    wsc   --  Bandai WonderSwan Color/Crystal
+    lynx  --  Atari Lynx
+    jag   --  Atari Jaguar
+    gp32  --  Gamepark GP32
+
+------------------------------------------------------------------------------
+
+ LICENSING
+
+  NINJA is distributed under the GNU GPL license. You can find the terms of
+  the license in license.txt.
+
+------------------------------------------------------------------------------
+
