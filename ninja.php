@@ -1,25 +1,18 @@
 #!/usr/bin/php -q
 <?php
 /*
-    NINJA - PHP Edition
-    Copyright (C) 2004 Derrick Sobodash
-    Version: 1.01
-    Web    : http://derrick.sobodash.com/
-    E-mail : derrick@sobodash.com
-    
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+NINJA
 
-    You should have received a copy of the GNU General Public License
-    along with this program (license.txt); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+Patching system that creates format independent patches for ROM images of
+various video game consoles.
+
+Version:   1.01
+Author:    Derrick Sobodash <derrick@sobodash.com>
+Copyright: (c) 2004, 2012 Derrick Sobodash
+Web site:  https://github.com/sobodash/ninja/
+License:   BSD License <http://opensource.org/licenses/bsd-license.php>
+
 */
 
 error_reporting (E_WARNING | E_PARSE);
