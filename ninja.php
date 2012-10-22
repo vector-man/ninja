@@ -24,12 +24,12 @@
 
 error_reporting (E_WARNING | E_PARSE);
 $version = "1.01";
-echo ("\nNINJA v$version - PHP Edition\nCopyright (C) 2004 Derrick Sobodash\n\n");
+echo ("\nNINJA v$version (cli)\nCopyright (c) 2004, 2012 Derrick Sobodash\n");
 set_time_limit(6000000);
 
 // Check the PHP version of the user
 if(phpversion() < "4.3.2")
-  die(print "ERROR: You must be running PHP version 4.3.2 or greater! Please upgrade.\n  Newer versions can be obtained for free from http://www.php.net/\n");
+  die(print "ERROR: PHP 4.3.2 or newer is required\n");
 
 if ($argc < 2) { DisplayOptions(); exit; }
 else
@@ -53,7 +53,7 @@ if ($mode=="-t") {
     $out_file = $argv[5];
   }
   if (in_array(strtolower($format), $extra_info)===FALSE) {
-    print "Selected mode is not supported, defaulting to RAW\n";
+    print "Mode not supported\nDefaulting to RAW\n";
     $format = "raw";
   }
   textualpatch($format, $source, $modified, $out_file, 0);
@@ -69,7 +69,7 @@ if ($mode=="-tz") {
     $out_file = $argv[5];
   }
   if (in_array(strtolower($format), $extra_info)===FALSE) {
-    print "Selected mode is not supported, defaulting to RAW\n";
+    print "Mode not supported\nDefaulting to RAW\n";
     $format = "raw";
   }
   textualpatch($format, $source, $modified, $out_file, 1);
@@ -85,7 +85,7 @@ if ($mode=="-b") {
     $out_file = $argv[5];
   }
   if (in_array(strtolower($format), $extra_info)===FALSE) {
-    print "Selected mode is not supported, defaulting to RAW\n";
+    print "Mode not supported\nDefaulting to RAW\n";
     $format = "raw";
   }
   binarypatch($format, $source, $modified, $out_file, 0);
@@ -101,7 +101,7 @@ if ($mode=="-bz") {
     $out_file = $argv[5];
   }
   if (in_array(strtolower($format), $extra_info)===FALSE) {
-    print "Selected mode is not supported, defaulting to RAW\n";
+    print "Mode not supported\nDefaulting to RAW\n";
     $format = "raw";
   }
   binarypatch($format, $source, $modified, $out_file, 1);
@@ -123,7 +123,7 @@ elseif ($mode=="-p") {
   elseif($format == "NINJA") {
     $version = fread($fd, 1);
     if($version != "1")
-      die(print "ERROR: This patch is for a newer version of NINJA!\n");
+      die(print "ERROR: This patch is for a newer version of NINJA\n");
     $format = fread($fd, 2);
     if($format == "T" . chr(0xa)) {
       print "Patch identified as textual RUP...\n";
@@ -143,7 +143,7 @@ elseif ($mode=="-p") {
     }
   }
   else
-    print "ERROR: Could not identify patch's format!\n";
+    print "ERROR: Patch format unknown\n";
 }
 
 else die(print "ERROR: The program just ate a frisbee\n");
@@ -156,11 +156,11 @@ function getmicrotime(){
 
 function textualpatch($format, $source, $modified, $outfile, $compressed) {
   global $extra_info, $version;
-  print "Creating the validation data, this could be slow...\n";
+  print "Creating validation data (this could be slow)...\n";
   $readfile = fopen($source, "rb");
   $filesize = filesize($source);
   if($filesize>0x1e00000) {
-    print "The file is too large to test, taking a 30MB sample...\n";
+    print "File too large to test\nTaking a 30MB sample...\n";
     $srcfile = fread($readfile, 0x1400000);
     fseek($readfile, ($filesize - 0xa00000), SEEK_SET);
     $srcfile.= fread($readfile, 0xa00000) . $filesize;
@@ -179,7 +179,7 @@ function textualpatch($format, $source, $modified, $outfile, $compressed) {
     elseif(strtolower($format) == "gb")
       list($srcfile, $fileoff) = gb_read($source);
     else {
-      print "There does not appear to be a definition for this file, defaulting to RAW...\n";
+      print "No matching format found\nDefaulting to RAW...\n";
       $format = "raw";
       $fd = fopen($source, "rb");
       $srcfile = fread($fd, filesize($source));
@@ -208,7 +208,7 @@ function textualpatch($format, $source, $modified, $outfile, $compressed) {
       list($modfile, $modoff) = snes_read($modified);
     }
     elseif(strtolower($format) == "mega") {
-      print "Converting to Megadrive common...\n";
+      print "Converting to Mega Drive common...\n";
       list($modfile, $modoff) = mega_read($modified);
     }
     elseif(strtolower($format) == "gb") {
@@ -216,7 +216,7 @@ function textualpatch($format, $source, $modified, $outfile, $compressed) {
       list($modfile, $modoff) = gb_read($modified);
     }
     else {
-      print "There does not appear to be a definition of this type, defaulting to RAW...\n";
+      print "No matching format found\nDefaulting to RAW...\n";
       $fd = fopen($modified, "rb");
       $modfile = fread($fd, filesize($modified));
       $modoff = 0;
@@ -304,11 +304,11 @@ function textualpatch($format, $source, $modified, $outfile, $compressed) {
 
 function binarypatch($format, $source, $modified, $outfile, $compressed) {
   global $extra_info;
-  print "Creating the validation data, this could be slow...\n";
+  print "Creating validation data (this could be slow)...\n";
   $readfile = fopen($source, "rb");
   $filesize = filesize($source);
   if($filesize>0x1e00000) {
-    print "The file is too large to test, taking a 30MB sample...\n";
+    print "File too large to test\nTaking a 30MB sample...\n";
     $srcfile = fread($readfile, 0x1400000);
     fseek($readfile, ($filesize - 0xa00000), SEEK_SET);
     $srcfile.= fread($readfile, 0xa00000) . $filesize;
@@ -327,7 +327,7 @@ function binarypatch($format, $source, $modified, $outfile, $compressed) {
     elseif(strtolower($format) == "gb")
       list($srcfile, $fileoff) = gb_read($source);
     else {
-      print "There does not appear to be a definition of this type, defaulting to RAW...\n";
+      print "No matching format found\nDefaulting to RAW...\n";
       $format = "raw";
       $fd = fopen($source, "rb");
       $fileoff = 0;
@@ -356,7 +356,7 @@ function binarypatch($format, $source, $modified, $outfile, $compressed) {
       list($modfile, $modoff) = snes_read($modified);
     }
     elseif(strtolower($format) == "mega") {
-      print "Converting to Megadrive common...\n";
+      print "Converting to Mega Drive common...\n";
       list($modfile, $modoff) = mega_read($modified);
     }
     elseif(strtolower($format) == "gb") {
@@ -364,7 +364,7 @@ function binarypatch($format, $source, $modified, $outfile, $compressed) {
       list($modfile, $modoff) = gb_read($modified);
     }
     else {
-      print "There does not appear to be a definition for this file, defaulting to RAW...\n";
+      print "No matching format found\nDefaulting to RAW...\n";
       $fd = fopen($modified, "rb");
       $modoff = 0;
       $modfile = fread($fd, filesize($modified));
@@ -535,7 +535,7 @@ function rup_text_patch($infile, $outfile, $compressed) {
     $readfile = fopen($outfile . ".bak", "rb");
     $filesize = filesize($outfile . ".bak");
     if($filesize>0x1e00000) {
-      print "The file is too large to test, taking a 30MB sample...\n";
+      print "File too large to test\nTaking a 30MB sample...\n";
       $sample = fread($readfile, 0x1400000);
       fseek($readfile, ($filesize - 0xa00000), SEEK_SET);
       $sample.= fread($readfile, 0xa00000) . $filesize;
@@ -561,23 +561,23 @@ function rup_text_patch($infile, $outfile, $compressed) {
         list($sample, $fileoff) = gb_read($outfile . ".bak");
       }
       else {
-        die(print "ERROR: This file's definition is not supported!\n");
+        die(print "ERROR: This file's definition is not supported\n");
       }
     }
     if($crc32 != "unk") {
       sscanf(crc32($sample), "%u", $crc);
       $testcrc = str_pad(dechex($crc), 8, "0", STR_PAD_LEFT);
       if($crc32 != $testcrc)
-        die(print "ERROR: Supplied file is not suitable for this patch!\n");
+        die(print "ERROR: Supplied file is not suitable for this patch\n");
       unset($crc, $testcrc);
     }
     if($md5 != "unk")
       if($md5 != md5($sample))
-        die(print "ERROR: Supplied file is not suitable for this patch!\n");
+        die(print "ERROR: Supplied file is not suitable for this patch\n");
     if($sha1 != "unk")
       if($sha1 != sha1($sample))
-        die(print "ERROR: Supplied file is not suitable for this patch!\n");
-    print "Supplied file checks out to be the same as the source...\n";
+        die(print "ERROR: Supplied file is not suitable for this patch\n");
+    print "Supplied file matches source\n";
     unset($crc32, $sha1, $md5);
   }
   $fd = fopen($outfile . ".bak", "rb");
@@ -676,7 +676,7 @@ function rup_bin_patch($infile, $outfile, $compressed) {
     $readfile = fopen($outfile . ".bak", "rb");
     $filesize = filesize($outfile . ".bak");
     if($filesize>0x1e00000) {
-      print "The file is too large to test, taking a 30MB sample...\n";
+      print "File too large to test\nTaking a 30MB sample...\n";
       $sample = fread($readfile, 0x1400000);
       fseek($readfile, ($filesize - 0xa00000), SEEK_SET);
       $fileoff=0;
@@ -702,23 +702,23 @@ function rup_bin_patch($infile, $outfile, $compressed) {
         list($sample, $fileoff) = gb_read($outfile . ".bak");
       }
       else {
-        die(print "ERROR: This file's definition is not supported!\n");
+        die(print "ERROR: This file's definition is not supported\n");
       }
     }
     if($crc32 != "00000000") {
       sscanf(crc32($sample), "%u", $crc);
       $testcrc = str_pad(dechex($crc), 8, "0", STR_PAD_LEFT);
       if($crc32 != $testcrc)
-        die(print "ERROR: Supplied file is not suitable for this patch!\n");
+        die(print "ERROR: Supplied file is not suitable for this patch\n");
       unset($crc, $testcrc);
     }
     if($md5 != "00000000000000000000000000000000")
       if($md5 != md5($sample))
-        die(print "ERROR: Supplied file is not suitable for this patch!\n");
+        die(print "ERROR: Supplied file is not suitable for this patch\n");
     if($sha1 != "0000000000000000000000000000000000000000")
       if($sha1 != sha1($sample))
-        die(print "ERROR: Supplied file is not suitable for this patch!\n");
-    print "Supplied file checks out to be the same as the source...\n";
+        die(print "ERROR: Supplied file is not suitable for this patch\n");
+    print "Supplied file matches source\n";
     unset($crc32, $sha1, $md5);
   }
   $fd = fopen($outfile . ".bak", "rb");
