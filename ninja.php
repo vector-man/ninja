@@ -7,7 +7,7 @@ NINJA
 Patching system that creates format independent patches for ROM images of
 various video game consoles.
 
-Version:   1.01
+Version:   1.01-vector-man
 Author:    Derrick Sobodash <derrick@sobodash.com>
 Copyright: (c) 2004, 2012 Derrick Sobodash
            (c) 2015 CodeIsle.com
@@ -18,7 +18,7 @@ License:   BSD License <http://opensource.org/licenses/bsd-license.php>
 
 error_reporting (E_WARNING | E_PARSE);
 $version = "1.01";
-echo ("\nNINJA v$version (cli)\nCopyright (c) 2004, 2012 Derrick Sobodash, 2015 CodeIsle.com\n");
+echo ("\nNINJA v$version-vector-man (cli)\nCopyright (c) 2004, 2012 Derrick Sobodash, 2015 CodeIsle.com\n");
 set_time_limit(6000000);
 
 // Check the PHP version of the user
